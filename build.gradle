@@ -1,0 +1,56 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.3'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.comwith'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// thymeleaf
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+	// Springboot  Starter web
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// Spring Security (BCryptPasswordEncoder - 비밀번호 암호화) 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	// test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// DB 연결
+	implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	// Spring Security OAuth 2.0 Client
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	// 유효성 검증 (Jakarta Validation API)
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// dotenv-java 의존성 추가 (.env file 활용)
+	implementation 'io.github.cdimascio:java-dotenv:5.2.2' // 최신 버전 확인 후 적용하세요
+
+	// Lombok (Getter, Setter, Constructor 등을 자동으로 생성)
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  db:
+    image: mariadb:11.7 # MariaDB 11.7
+    container_name: fitlog-mariadb
+    ports:
+      - "3307:3306"   #MySQL 포트 충돌로 3306 대신 3307 사용/ 그리고 3307을 3306과 연결
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD} # 환경 변수 사용
+      MYSQL_DATABASE: fitlog
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD} # 환경 변수 사용
+    volumes:
+      - mariadb_data:/var/lib/mysql # 데이터 영속성을 위한 볼륨 마운트
+      - ./initdb.d:/docker-entrypoint-initdb.d # 초기화 스크립트 (선택 사항)
+    restart: always # Docker 재시작 시 컨테이너도 자동으로 재시작
+
+  app:
+    build: .
+    container_name: fitlog
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/fitlog
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+
+    depends_on:
+      - db
+    restart: on-failure
+
+volumes:
+  mariadb_data: # 데이터 볼륨 정의
+

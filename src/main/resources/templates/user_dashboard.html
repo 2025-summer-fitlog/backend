@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사용자 대시보드</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+            flex-direction: column;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px 50px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #555;
+            font-size: 1.1em;
+        }
+        .logout-button {
+            background-color: #dc3545; /* 빨간색 계열 */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 20px;
+        }
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>사용자 대시보드</h1>
+    <!-- DashboardController에서 모델에 추가한 userName 값을 표시 -->
+    <p th:text="${'환영합니다, ' + userName + '님!'}">환영합니다, [사용자 이름]님!</p>
+
+    <!-- 로그아웃 버튼: 사용자 정의 로그아웃 컨트롤러의 GET 엔드포인트를 호출 -->
+    <a href="/custom-logout">
+        <button type="button" class="logout-button">로그아웃</button>
+    </a>
+</div>
+</body>
+</html>
