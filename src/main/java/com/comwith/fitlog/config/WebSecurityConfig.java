@@ -1,9 +1,12 @@
 package com.comwith.fitlog.config;
 
+import com.comwith.fitlog.users.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler; // 추가 임포트 (로그인 성공 핸들러)
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler; // 추가 임포트
@@ -13,11 +16,19 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 public class WebSecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final UserService userService;
 
     // CustomOAuth2UserService를 주입받습니다.
-    public WebSecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
+    public WebSecurityConfig(CustomOAuth2UserService customOAuth2UserService, UserService userService) {
         this.customOAuth2UserService = customOAuth2UserService;
+        this.userService = userService;
     }
+
+    // ✨ BCryptPasswordEncoder 빈 등록 (FitlogApplication.java에 있어도 여기에 명시적으로 두는 것이 일반적)
+//    @Bean
+//    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -32,7 +43,8 @@ public class WebSecurityConfig {
                                 "/oauth2/**",
                                 "/login/oauth2/code/**",
                                 "/logout",
-                                "/custom-logout"
+                                "/custom-logout",
+                                "/**.html"
                         ).permitAll()
 
                         // 소셜 로그인 시작 경로도 허용 (예: /oauth2/authorization/google)
@@ -41,22 +53,28 @@ public class WebSecurityConfig {
 
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
                 )
+
                 // 폼 로그인 관련
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login_test") // 로그인페이지 /login_test 로 세팅.
-                        .loginProcessingUrl("/login") // 로그인 처리 URL (POST)
-                        .defaultSuccessUrl("/dashboard", true) // 로그인 성공 시 /dashboard로 항상 리다이렉트
+                        .loginProcessingUrl("/api/users/login") // ✨ 수정: UserController의 로그인 엔드포인트와 일치
+                        .usernameParameter("username")
+                        .passwordParameter("password")
+                        .defaultSuccessUrl("/fitlog-onboarding.html", true) // ✨ 수정: 로그인 성공 시 테스트 HTML로 리다이렉트
+                        //.successHandler(customAuthenticationSuccessHandler()) // 커스텀 핸들러 지정
+                        .failureUrl("/login_test?error=true")
                         .permitAll()
                 )
                 .httpBasic(httpBasic -> httpBasic.disable()) // HTTP Basic 인증 비활성화
+
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login_test")
-                        .defaultSuccessUrl("/dashboard", true)// OAuth2 로그인 활성화
+                        .defaultSuccessUrl("/fitlog-onboarding.html", true)// OAuth2 로그인 활성화
 
-                        /*.userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
+                        .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
                                 .userService(customOAuth2UserService) // 우리가 만든 CustomOAuth2UserService 연결
                         )
-                         */
+
 
                         // OAuth2 로그인 성공 후 리다이렉션될 기본 URL 설정 (프론트엔드 URL로 설정)
                         // 예를 들어, 로그인 성공 후 클라이언트가 처리할 `/oauth2/success` 같은 엔드포인트로 보낼 수 있습니다.
@@ -67,7 +85,7 @@ public class WebSecurityConfig {
 
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login_test?logout")
+                        .logoutSuccessUrl("/fitlog-onboarding.html?logout")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .permitAll()

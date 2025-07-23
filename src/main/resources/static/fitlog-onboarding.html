@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
@@ -207,7 +208,7 @@
   function updateLoginStatus(username) {
     loggedInUsername = username;
     document.getElementById('currentUsername').textContent = username ? username : '로그인되지 않음';
-    // 로그인 상태에 따라 특정 폼 활성화/비활성화 (여기서는 단순 표시만)
+    // 로그인 상태에 따라 특정 폼 활성화/비활성화
     const formsToEnable = ['physicalInfoForm', 'goalForm', 'preferredTimeForm', 'workoutFrequencyForm', 'mainPartForm'];
     formsToEnable.forEach(formId => {
       const form = document.getElementById(formId);
@@ -218,10 +219,8 @@
     });
   }
 
-  // 초기 로드 시 로그인 상태 확인 (세션이 유지되는 경우)
+  // 초기 로드 시 로그인 상태 확인
   document.addEventListener('DOMContentLoaded', () => {
-    // 실제 앱에서는 페이지 로드 시 백엔드에 로그인 상태를 묻는 API 호출 필요
-    // 여기서는 단순화하여 직접 설정하지 않고, 로그인 성공 시 업데이트하도록 함.
     updateLoginStatus(null); // 초기에는 로그인되지 않은 상태로 시작
   });
 
@@ -241,7 +240,7 @@
       const data = await response.json();
       if (response.ok) {
         showMessage('registerMessage', '회원가입 성공! 이제 로그인해주세요.', 'success');
-        // 회원가입 성공 후 입력 필드 초기화 (선택 사항)
+        // 회원가입 성공 후 입력 필드 초기화
         document.getElementById('registerEmail').value = '';
         document.getElementById('registerUsername').value = '';
         document.getElementById('registerPassword').value = '';
@@ -272,8 +271,6 @@
         showMessage('loginMessage', `로그인 성공! ${data.name}님 환영합니다.`, 'success');
         updateLoginStatus(data.username);
         // 실제 애플리케이션에서는 여기서 JWT 토큰을 localStorage나 sessionStorage에 저장해야 합니다.
-        // 현재 백엔드에서는 JWT를 반환하지 않으므로, 이 예제에서는 단순 로그인 상태만 표시합니다.
-        // 그리고 모든 API 요청에 Authorization 헤더를 추가해야 합니다.
       } else {
         const errorMessage = data.message || JSON.stringify(data);
         showMessage('loginMessage', `로그인 실패: ${errorMessage}`, 'error');
@@ -290,11 +287,9 @@
   function logout() {
     // 백엔드 로그아웃 엔드포인트 호출
     fetch('http://localhost:8080/custom-logout', {
-      method: 'GET' // 현재 백엔드 LogoutController가 GET으로 되어있음.
+      method: 'GET'
     })
             .then(response => {
-              // 로그아웃은 보통 서버에서 세션을 무효화하고 리다이렉트하므로,
-              // 여기서 별도의 응답 처리가 필요 없을 수 있습니다.
               console.log('로그아웃 요청됨');
               updateLoginStatus(null);
               showMessage('loginMessage', '로그아웃 되었습니다.', 'success');
@@ -306,14 +301,11 @@
             });
   }
 
-
   // ----------------- 공통 API 요청 함수 -----------------
-  // 현재 백엔드에서 JWT 토큰을 발행하지 않으므로, 로그인 여부만 확인하고 요청합니다.
-  // 실제로는 `Authorization: Bearer <your_jwt_token>` 헤더를 추가해야 합니다.
   async function sendApiRequest(url, method, body, messageElementId) {
     if (!loggedInUsername) {
       showMessage(messageElementId, '로그인이 필요합니다.', 'error');
-      return;
+      return null; // 요청이 전송되지 않았으므로 null 반환
     }
     try {
       const response = await fetch(url, {
