@@ -25,21 +25,23 @@ public class WebSecurityConfig {
                 .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
                 .authorizeHttpRequests(authorize -> authorize
                         // 회원가입 및 로그인 경로는 인증 없이 접근 허용
-                        .requestMatchers("/api/users/register",
+                        .requestMatchers(
+                                "/api/users/register",
                                 "/api/users/login",
                                 "/login_test",
                                 "/oauth2/**",
                                 "/login/oauth2/code/**",
                                 "/logout",
                                 "/custom-logout"
-                                ).permitAll()
+                        ).permitAll()
 
                         // 소셜 로그인 시작 경로도 허용 (예: /oauth2/authorization/google)
                         // Spring Security가 자동으로 처리하는 경로입니다.
-                        // .requestMatchers("/oauth2/**").permitAll() // 불필요, 아래 oauth2Login이 처리
+                        .requestMatchers("/api/init/**").permitAll()
 
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요
                 )
+                // 폼 로그인 관련
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login_test") // 로그인페이지 /login_test 로 세팅.
                         .loginProcessingUrl("/login") // 로그인 처리 URL (POST)
@@ -85,5 +87,5 @@ public class WebSecurityConfig {
         return handler;
     }
 
-    // BCryptPasswordEncoder Bean은 FitlogApplication.java에 이미 등록되어 있으므로 여기에 또 등록할 필요 없습니다.
+
 }
