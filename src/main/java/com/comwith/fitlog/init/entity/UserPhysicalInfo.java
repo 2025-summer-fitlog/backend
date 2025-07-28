@@ -1,3 +1,4 @@
+// 사용자의 신체정보 관련 엔티티
 package com.comwith.fitlog.init.entity;
 
 import com.comwith.fitlog.users.entity.User;

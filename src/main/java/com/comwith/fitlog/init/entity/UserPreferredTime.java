@@ -1,3 +1,4 @@
+// 희망 운동 시간 설정 관련 엔티티
 package com.comwith.fitlog.init.entity;
 
 import com.comwith.fitlog.users.entity.User;

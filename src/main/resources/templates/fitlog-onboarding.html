@@ -44,15 +44,15 @@
 <div class="container">
   <h1>Fitlog 사용자 초기 정보 설정</h1>
 
-  <div class="auth-status">
-    현재 로그인: <span id="currentUsername">로그인되지 않음</span>
-    <button onclick="logout()">로그아웃</button>
+  <div class="login-status">
+    현재 로그인: <span id="currentUsername" th:text="${isLoggedIn ? userName : '로그인되지 않음'}">로그인되지 않음</span>
+    <button onclick="logout()" th:if="${isLoggedIn}">로그아웃</button>
   </div>
   <hr>
 
   <h2>1. 로그인/회원가입</h2>
   <div class="section">
-    <form id="authForm">
+    <form id="registerForm">
       <h3>회원가입</h3>
       <label for="registerEmail">이메일:</label>
       <input type="text" id="registerEmail" name="email" required>
@@ -68,9 +68,11 @@
 
       <button type="button" onclick="registerUser()">회원가입</button>
       <div id="registerMessage" class="message"></div>
+    </form>
 
       <hr>
 
+      <!--
       <h3>로그인</h3>
       <label for="loginUsername">아이디:</label>
       <input type="text" id="loginUsername" name="username" required>
@@ -81,6 +83,25 @@
       <button type="button" onclick="loginUser()">로그인</button>
       <div id="loginMessage" class="message"></div>
     </form>
+    -->
+      <!-- Ajax 로그인 대신 표준 폼 사용 -->
+    <form id="loginForm" method="post" action="/api/users/login">
+      <h3>로그인</h3>
+
+        <label for="loginUsername">아이디:</label>
+        <input type="text" id="loginUsername" name="username" required>
+
+        <label for="loginPassword">비밀번호:</label>
+        <input type="password" id="loginPassword" name="password" required>
+
+        <button type="submit">로그인</button>
+
+        <!-- 에러 메시지 표시 -->
+        <div th:if="${param.error}" class="message error">
+          로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.
+        </div>
+      </form>
+
   </div>
 
   <hr>
@@ -204,41 +225,54 @@
     }, 5000);
   }
 
-  // 로그인 상태 업데이트 (여기서 username은 서버로부터 받은 실제 username이 될 것입니다)
+  // 로그인 상태 업데이트 (안전한 DOM 조작)
   function updateLoginStatus(username) {
     loggedInUsername = username;
-    document.getElementById('currentUsername').textContent = username ? username : '로그인되지 않음';
-    // 로그인 상태에 따라 특정 폼 활성화/비활성화
+
+    // 1. currentUsername 요소 안전하게 처리
+    const currentUsernameElement = document.getElementById('currentUsername');
+    if (currentUsernameElement) {
+      currentUsernameElement.textContent = username ? username : '로그인되지 않음';
+    } else {
+      console.warn('currentUsername 요소를 찾을 수 없습니다');
+    }
+
+    // 2. 폼들 안전하게 처리
     const formsToEnable = ['physicalInfoForm', 'goalForm', 'preferredTimeForm', 'workoutFrequencyForm', 'mainPartForm'];
+
     formsToEnable.forEach(formId => {
       const form = document.getElementById(formId);
       if (form) {
         const inputs = form.querySelectorAll('input, select, button');
-        inputs.forEach(input => input.disabled = !username);
+        inputs.forEach(input => {
+          if (input) {  // input이 존재하는지 추가 확인
+            input.disabled = !username;
+          }
+        });
+      } else {
+        console.warn(`${formId} 폼을 찾을 수 없습니다`);
       }
     });
   }
 
-  // 초기 로드 시 로그인 상태 확인
-  // 페이지 로드 시 서버에 현재 로그인 상태를 확인하는 API를 호출할 수 있습니다.
-  // 이 예시에서는 새로고침 시 로그인되지 않은 상태로 시작하도록 간단히 설정합니다.
-  // 실제 앱에서는 로그인 여부를 확인하는 별도의 API 호출이 필요합니다.
-  document.addEventListener('DOMContentLoaded', async () => {
-    // 세션이 유효한지 확인하는 API 호출 (선택 사항, 필요 시 구현)
-    // try {
-    //   const response = await fetch(`${BASE_URL}/users/me`); // 현재 사용자 정보를 가져오는 API
-    //   if (response.ok) {
-    //     const user = await response.json();
-    //     updateLoginStatus(user.username);
-    //   } else {
-    //     updateLoginStatus(null);
-    //   }
-    // } catch (error) {
-    //   console.error("로그인 상태 확인 실패:", error);
-    //   updateLoginStatus(null);
-    // }
-    updateLoginStatus(null); // 초기에는 로그인되지 않은 상태로 시작
+  // 3. DOM 로드 완료 후 실행 보장
+  document.addEventListener('DOMContentLoaded', function() {
+    // 페이지 로드 시 초기 로그인 상태 확인
+    checkLoginStatus();
   });
+
+  // 4. 로그인 상태 확인 함수 (서버에서 상태 가져오기)
+  function checkLoginStatus() {
+    // Thymeleaf에서 이미 렌더링된 상태 사용
+    const loginStatusElement = document.getElementById('currentUsername');
+    if (loginStatusElement && loginStatusElement.textContent !== '로그인되지 않음') {
+      // 이미 로그인된 상태
+      loggedInUsername = loginStatusElement.textContent;
+      updateLoginStatus(loggedInUsername);
+    } else {
+      updateLoginStatus(null);
+    }
+  }
 
   // ----------------- 회원가입 -----------------
   async function registerUser() {

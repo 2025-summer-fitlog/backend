@@ -1,4 +1,4 @@
-// src/main/java/com/comwith/fitlog/initialization/entity/UserGoal.java
+// 운동 목적 조회 엔티티
 package com.comwith.fitlog.init.entity;
 
 import com.comwith.fitlog.users.entity.User;

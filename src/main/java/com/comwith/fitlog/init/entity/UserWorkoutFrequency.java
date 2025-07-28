@@ -1,3 +1,4 @@
+// 희망하는 주당 운동횟수 관련 엔티티
 package com.comwith.fitlog.init.entity;
 
 import com.comwith.fitlog.users.entity.User;

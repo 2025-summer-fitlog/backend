@@ -3,31 +3,41 @@ package com.comwith.fitlog.users.service;
 import com.comwith.fitlog.users.dto.UserRegisterRequest;
 import com.comwith.fitlog.users.entity.User;
 import com.comwith.fitlog.users.repository.UserRepository;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.Collections;
-import java.util.Optional;
 
 @Service
+@Primary // 이걸 추가하라는데 왜?
 public class UserService implements UserDetailsService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    // ✅ 생성자 수정 - 닫는 괄호 추가
     public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     public User save(UserRegisterRequest dto) {
+        logger.info("사용자 등록 시도: {}", dto.getUsername());
+
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+            logger.warn("이메일 중복: {}", dto.getEmail());
             throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
+
         if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
+            logger.warn("아이디 중복: {}", dto.getUsername());
             throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
         }
 
@@ -35,42 +45,36 @@ public class UserService implements UserDetailsService {
         entity.setEmail(dto.getEmail());
         entity.setUsername(dto.getUsername());
         entity.setPassword(bCryptPasswordEncoder.encode(dto.getPassword()));
-        entity.setName(dto.getName()); // dto.getNickname() -> dto.getName()
+        entity.setName(dto.getName());
         entity.setLoginMethod("LOCAL");
-        return userRepository.save(entity);
+
+        User savedUser = userRepository.save(entity);
+        logger.info("사용자 등록 성공: {}", savedUser.getUsername());
+        return savedUser;
     }
 
-    public User login(String username, String rawPassword) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
-
-        if (!bCryptPasswordEncoder.matches(rawPassword, user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 맞지 않습니다.");
-        }
-        return user;
-    }
-
-
-    /**
-     * Spring Security의 UserDetailsService 인터페이스 구현 메서드.
-     * 사용자 이름을 기반으로 사용자 정보를 로드합니다.
-     *
-     * @param username 로그인 시도하는 사용자 아이디
-     * @return Spring Security의 UserDetails 객체
-     * @throws UsernameNotFoundException 사용자를 찾을 수 없을 때 발생
-     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // UserRepository를 사용하여 데이터베이스에서 사용자 정보를 조회
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("아이디를 찾을 수 없습니다: " + username));
+        logger.info("Spring Security 인증 시도: {}", username);
 
-        // 조회된 사용자 정보를 Spring Security의 UserDetails 객체로 변환하여 반환
-        // 여기서는 간단하게 "ROLE_USER" 권한을 부여합니다.
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> {
+                    logger.error("사용자 없음: {}", username);
+                    return new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username);
+                });
+
+        logger.info("사용자 인증 정보 로드 완료: {}", user.getUsername());
+
         return new org.springframework.security.core.userdetails.User(
-                user.getUsername(), // 사용자의 아이디 (인증 주체)
-                user.getPassword(), // 암호화된 비밀번호
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")) // 사용자에게 부여할 권한 목록
+                user.getUsername(),
+                user.getPassword(),
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
         );
     }
+
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + username));
+    }
+
 }

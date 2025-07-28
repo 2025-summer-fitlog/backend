@@ -1,4 +1,3 @@
-// src/main/java/com/comwith/fitlog/initialization/repository/UserGoalRepository.java
 package com.comwith.fitlog.init.repository;
 
 import com.comwith.fitlog.init.entity.UserGoal;
