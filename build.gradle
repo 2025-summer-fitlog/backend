@@ -27,6 +27,16 @@ dependencies {
 	// Spring Security (BCryptPasswordEncoder - 비밀번호 암호화) 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
+	// 파일 업로드 처리
+	implementation 'commons-fileupload:commons-fileupload:1.5'
+	implementation 'commons-io:commons-io:2.11.0'
+
+	// JSON 응답 처리
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+	// API 문서화 (Swagger 관리 위해 사용)
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+
 	// test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
