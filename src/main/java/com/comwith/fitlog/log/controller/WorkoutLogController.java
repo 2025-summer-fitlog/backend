@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.util.List;
 @RestController
-@RequestMapping("/log")
+@RequestMapping("/api/log")
 @Validated
 @CrossOrigin(origins = "*") // 프론트엔드 연동용
 public class WorkoutLogController {
