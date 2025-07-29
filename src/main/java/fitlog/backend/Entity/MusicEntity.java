@@ -15,6 +15,7 @@ public class MusicEntity {
     private Long id;
     private String title;
 
+    //태그랑 연결
     @ManyToOne(fetch = FetchType.LAZY)
     private MusictagEntity tag;
 

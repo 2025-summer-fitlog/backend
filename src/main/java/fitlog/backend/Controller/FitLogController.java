@@ -59,6 +59,7 @@ public class FitLogController {
         return ResponseEntity.ok(fitLogService.getUserSavedVideos(userId));
     }
 
+    //음악 태그
     @GetMapping("/tags/{tagId}/music")
     public MusicEntity getRandomMusicByTag(@PathVariable Long tagId){
         return fitLogService.getRandomSongByTag(tagId);

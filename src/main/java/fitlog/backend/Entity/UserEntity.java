@@ -20,7 +20,7 @@ public class UserEntity {
     private String username;
     private String email;
 
-    @ManyToMany
+    @ManyToMany //사용자 저장 동영상
     @JoinTable(
             name = "user_saved_videos",
             joinColumns = @JoinColumn(name = "user_id"),

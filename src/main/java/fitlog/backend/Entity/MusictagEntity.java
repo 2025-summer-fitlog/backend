@@ -16,6 +16,7 @@ import lombok.*;
 public class MusictagEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // 자동화
     private Long id;
     private String name;
 }

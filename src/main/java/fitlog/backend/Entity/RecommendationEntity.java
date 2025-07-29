@@ -33,16 +33,17 @@ public class RecommendationEntity {
     private List<String> keywords;
 
     @Lob
-    private String warmupText;
+    private String warmupText; //준비 운동
 
-    @Lob
+    @Lob //주의사항
     private String cautionText;
 
-    @Lob
+    @Lob //보조기구 추천
     private String equipmentText;
 
-    @Lob
+    @Lob //운동 효과
     private String effectText;
 
+    //ex.하체,상체
 private  String bodyPart;
 }

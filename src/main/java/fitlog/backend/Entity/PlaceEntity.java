@@ -13,6 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 public class PlaceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
