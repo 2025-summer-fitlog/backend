@@ -44,6 +44,7 @@ public class WebSecurityConfig {
                                 "/",
                                 "/login_test",
                                 "/fitlog-onboarding",
+                                "/api/users/send-verification", "/api/users/verify-email",
                                 "/api/users/register",
                                 "/api/users/login",
                                 "/api/users/me",

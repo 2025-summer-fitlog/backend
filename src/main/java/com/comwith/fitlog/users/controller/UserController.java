@@ -2,6 +2,7 @@ package com.comwith.fitlog.users.controller;
 
 import com.comwith.fitlog.users.dto.*;
 import com.comwith.fitlog.users.entity.User;
+import com.comwith.fitlog.users.service.EmailService;
 import com.comwith.fitlog.users.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -29,13 +30,16 @@ public class UserController {
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
+    private final EmailService emailService;
 
-    public UserController(UserService userService, AuthenticationManager authenticationManager) {
+    public UserController(UserService userService, AuthenticationManager authenticationManager, EmailService emailService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
+        this.emailService = emailService;
     }
 
-    // 회원가입
+    // 회원가입 (전)
+    /*
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserRegisterRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -64,8 +68,44 @@ public class UserController {
             return ResponseEntity.badRequest().body(error);
         }
 
+    }
 
+     */
+    @PostMapping("/register")
+    public ResponseEntity<Map<String, Object>> register(@Valid @RequestBody UserRegisterRequest request, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map<String, Object> errors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error ->
+                    errors.put(error.getField(), error.getDefaultMessage()));
+            return ResponseEntity.badRequest().body(errors);
+        }
 
+        try {
+            // ✅ 이메일 검증 여부 확인 추가
+            if (!emailService.isEmailVerified(request.getEmail())) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "이메일 인증이 필요합니다.");
+                return ResponseEntity.badRequest().body(error);
+            }
+
+            User saved = userService.save(request);
+
+            UserRegisterResponse response = new UserRegisterResponse(
+                    saved.getId(),
+                    saved.getUsername(),
+                    saved.getName(),
+                    saved.getEmail()
+            );
+            Map<String, Object> responseMap = new HashMap<>();
+            responseMap.put("user", response);
+
+            return ResponseEntity.ok(responseMap);
+
+        } catch (IllegalArgumentException e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
     }
 
     // 로그인 (Spring Security와 연동)
@@ -111,6 +151,32 @@ public class UserController {
         }
     }
 
+    // 로그아웃
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, Object>> logout(HttpServletRequest request) {
+        try {
+            // 현재 세션 무효화
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.invalidate();
+            }
+
+            // SecurityContext 초기화
+            SecurityContextHolder.clearContext();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "로그아웃이 완료되었습니다.");
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "로그아웃 처리 중 오류가 발생했습니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+
     // 현재 로그인된 사용자 정보 조회
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(Authentication authentication, HttpServletRequest request) {
@@ -141,6 +207,54 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다.");
         }
     }
+
+    // 이메일 검증 코드 발송
+    @PostMapping("/send-verification")
+    public ResponseEntity<Map<String, Object>> sendVerificationEmail(@RequestBody Map<String, String> request) {
+        try {
+            String email = request.get("email");
+
+            // 이메일 중복 체크
+            if (userService.isEmailExists(email)) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "이미 사용 중인 이메일입니다.");
+                return ResponseEntity.badRequest().body(error);
+            }
+
+            // 기존 검증 기록 삭제 후 새로 발송
+            emailService.deleteExistingVerification(email);
+            emailService.sendVerificationEmail(email);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "인증번호가 발송되었습니다.");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "이메일 발송 중 오류가 발생했습니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    // 이메일 검증 확인
+    @PostMapping("/verify-email")
+    public ResponseEntity<Map<String, Object>> verifyEmail(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String code = request.get("code");
+
+        boolean isVerified = emailService.verifyEmail(email, code);
+
+        Map<String, Object> response = new HashMap<>();
+        if (isVerified) {
+            response.put("message", "이메일 인증이 완료되었습니다.");
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("error", "잘못된 인증번호이거나 만료되었습니다.");
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -15,7 +15,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 
 @Service
-@Primary // 이걸 추가하라는데 왜?
+@Primary // 이걸 추가하는 이유 -> UserDetailService 인터페이스를 구현한 빈이 여러 개 있을 때,
+// 스프링 security가 어떤 것을 사용할지 모르는데, 우선 순위를 알려주기 위함.
 public class UserService implements UserDetailsService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
@@ -75,6 +76,24 @@ public class UserService implements UserDetailsService {
     public User findByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + username));
+    }
+
+    public boolean isEmailExists(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public User registerUser(User user) {
+        // 기존 save 메서드를 활용하거나 새로 구현
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+        }
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
+        }
+
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        user.setLoginMethod("LOCAL");
+        return userRepository.save(user);
     }
 
 }

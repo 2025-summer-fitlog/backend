@@ -14,4 +14,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 소셜 로그인 사용자를 찾기 위한 메서드 변경
     // authType과 providerId를 통해 유니크한 소셜 사용자 식별
     Optional<User> findByLoginMethodAndProviderId(String loginMethod, String providerId);
+
+    boolean existsByEmail(String email);
 }
