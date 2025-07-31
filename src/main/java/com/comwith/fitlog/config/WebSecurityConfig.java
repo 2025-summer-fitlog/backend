@@ -60,7 +60,7 @@ public class WebSecurityConfig {
                                 "/**.png", "/**.jpg", "/**.gif", "/**.ico",
                                 "/favicon.ico"
                         ).permitAll()
-                        .requestMatchers("/api/init/**", "/api/log/**").authenticated()
+                        .requestMatchers("/api/init/**", "/api/log/**", "/api/profile/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(formLogin -> formLogin

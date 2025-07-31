@@ -38,39 +38,6 @@ public class UserController {
         this.emailService = emailService;
     }
 
-    // 회원가입 (전)
-    /*
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody UserRegisterRequest request, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            Map<String, String> errors = new HashMap<>();
-            bindingResult.getFieldErrors().forEach(error ->
-                    errors.put(error.getField(), error.getDefaultMessage()));
-            return ResponseEntity.badRequest().body(errors);
-        }
-
-        try {
-            User saved = userService.save(request);
-
-            UserRegisterResponse response = new UserRegisterResponse(
-                    saved.getId(),
-                    saved.getUsername(),
-                    saved.getName(),
-                    saved.getEmail()
-            );
-
-            return ResponseEntity.ok(response);
-
-
-        } catch (IllegalArgumentException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            return ResponseEntity.badRequest().body(error);
-        }
-
-    }
-
-     */
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> register(@Valid @RequestBody UserRegisterRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
