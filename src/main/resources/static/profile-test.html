@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>피트니스 앱 - 마이페이지 테스트</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .main-content {
+      padding: 30px;
+    }
+
+    .section {
+      margin-bottom: 30px;
+      padding: 25px;
+      border: 2px solid #f0f0f0;
+      border-radius: 10px;
+      background: #fafafa;
+    }
+
+    .section h2 {
+      color: #333;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #4facfe;
+      padding-bottom: 10px;
+    }
+
+    .login-section {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    }
+
+    .profile-section {
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    }
+
+    .personal-info-section {
+      background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+    }
+
+    .btn {
+      padding: 12px 25px;
+      margin: 10px 5px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+      color: white;
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+    }
+
+    .btn-social {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      color: #333;
+      border: 2px solid #ff9a9e;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #4facfe;
+      box-shadow: 0 0 10px rgba(79, 172, 254, 0.3);
+    }
+
+    .response-box {
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 15px;
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .status {
+      padding: 10px 15px;
+      border-radius: 5px;
+      margin: 10px 0;
+      font-weight: bold;
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .status.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    #loginStatus {
+      font-size: 18px;
+      font-weight: bold;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🏋️‍♂️ 피트니스 앱</h1>
+    <p>마이페이지 API 테스트 페이지</p>
+  </div>
+
+  <div class="main-content">
+    <!-- 로그인 상태 확인 -->
+    <div id="loginStatus" class="status info">로그인 상태 확인 중...</div>
+
+    <!-- 1. 로그인 섹션 -->
+    <div class="section login-section">
+      <h2>🔐 로그인</h2>
+
+      <!-- 로컬 로그인 -->
+      <div style="margin-bottom: 25px;">
+        <h3>로컬 로그인</h3>
+        <div class="form-group">
+          <label for="localUsername">사용자명</label>
+          <input type="text" id="localUsername" placeholder="username 입력">
+        </div>
+        <div class="form-group">
+          <label for="localPassword">비밀번호</label>
+          <input type="password" id="localPassword" placeholder="비밀번호 입력">
+        </div>
+        <button class="btn btn-primary" onclick="localLogin()">로컬 로그인</button>
+      </div>
+
+      <!-- 소셜 로그인 -->
+      <div>
+        <h3>소셜 로그인</h3>
+        <a href="/oauth2/authorization/google" class="btn btn-social">
+          🔴 Google 로그인
+        </a>
+        <a href="/oauth2/authorization/kakao" class="btn btn-social">
+          🟡 Kakao 로그인
+        </a>
+      </div>
+
+      <button class="btn btn-warning" onclick="logout()">로그아웃</button>
+      <div id="loginResponse" class="response-box" style="display:none;"></div>
+    </div>
+
+    <!-- 2. 사용자 조회 섹션 -->
+    <div class="section profile-section">
+      <h2>👤 사용자 조회</h2>
+      <button class="btn btn-success" onclick="getCurrentUser()">내 이름 조회 (/api/profile/me)</button>
+      <div id="userResponse" class="response-box" style="display:none;"></div>
+    </div>
+
+    <!-- 3. 개인정보 조회/수정 섹션 -->
+    <div class="section personal-info-section">
+      <h2>📝 개인정보 관리</h2>
+
+      <!-- 개인정보 조회 -->
+      <div style="margin-bottom: 25px;">
+        <button class="btn btn-success" onclick="getPersonalInfo()">개인정보 조회 (/api/profile/personal-info)</button>
+        <div id="personalInfoResponse" class="response-box" style="display:none;"></div>
+      </div>
+
+      <!-- 개인정보 수정 -->
+      <div>
+        <h3>개인정보 수정</h3>
+        <div class="form-group">
+          <label for="updateName">이름</label>
+          <input type="text" id="updateName" placeholder="새로운 이름 입력">
+        </div>
+        <div class="form-group" id="passwordGroup">  <!-- ✨ 이 ID만 추가하면 됨! -->
+          <label for="updatePassword">비밀번호</label>
+          <input type="password" id="updatePassword" placeholder="새로운 비밀번호 입력">
+        </div>
+        <button class="btn btn-warning" onclick="updatePersonalInfo()">개인정보 수정 (/api/profile/personal-info)</button>
+        <div id="updateResponse" class="response-box" style="display:none;"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // 페이지 로드 시 로그인 상태 확인
+  window.onload = function() {
+    checkLoginStatus();
+  };
+
+  // 로그인 상태 확인
+  async function checkLoginStatus() {
+    try {
+      const response = await fetch('/api/profile/me', {
+        method: 'GET',
+        credentials: 'include'
+      });
+
+      const loginStatus = document.getElementById('loginStatus');
+
+      if (response.ok) {
+        const data = await response.json();
+        loginStatus.textContent = `✅ 로그인됨 - ${data.name}님 환영합니다!`;
+        loginStatus.className = 'status success';
+      } else {
+        loginStatus.textContent = '❌ 로그인이 필요합니다';
+        loginStatus.className = 'status error';
+      }
+    } catch (error) {
+      const loginStatus = document.getElementById('loginStatus');
+      loginStatus.textContent = '⚠️ 로그인 상태 확인 실패';
+      loginStatus.className = 'status error';
+    }
+  }
+
+  // 로컬 로그인
+  async function localLogin() {
+    const username = document.getElementById('localUsername').value;
+    const password = document.getElementById('localPassword').value;
+
+    if (!username || !password) {
+      alert('사용자명과 비밀번호를 입력하세요');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          username: username,
+          password: password
+        })
+      });
+
+      const responseDiv = document.getElementById('loginResponse');
+      responseDiv.style.display = 'block';
+
+      if (response.ok) {
+        const data = await response.json();
+        responseDiv.textContent = `✅ 로그인 성공!\n응답: ${JSON.stringify(data, null, 2)}`;
+        responseDiv.style.backgroundColor = '#d4edda';
+
+        // 로그인 후 상태 다시 확인
+        setTimeout(checkLoginStatus, 500);
+      } else {
+        const errorData = await response.json();
+        responseDiv.textContent = `❌ 로그인 실패 (${response.status})\n응답: ${JSON.stringify(errorData, null, 2)}`;
+        responseDiv.style.backgroundColor = '#f8d7da';
+      }
+    } catch (error) {
+      const responseDiv = document.getElementById('loginResponse');
+      responseDiv.style.display = 'block';
+      responseDiv.textContent = `⚠️ 요청 실패: ${error.message}`;
+      responseDiv.style.backgroundColor = '#f8d7da';
+    }
+  }
+
+  // 로그아웃
+  async function logout() {
+    try {
+      const response = await fetch('/custom-logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        alert('✅ 로그아웃 되었습니다');
+        checkLoginStatus();
+      } else {
+        alert('❌ 로그아웃 실패');
+      }
+    } catch (error) {
+      alert(`⚠️ 로그아웃 요청 실패: ${error.message}`);
+    }
+  }
+
+  // 현재 사용자 조회
+  async function getCurrentUser() {
+    try {
+      const response = await fetch('/api/profile/me', {
+        method: 'GET',
+        credentials: 'include'
+      });
+
+      const responseDiv = document.getElementById('userResponse');
+      responseDiv.style.display = 'block';
+
+      if (response.ok) {
+        const data = await response.json();
+        responseDiv.textContent = `✅ 조회 성공!\n응답: ${JSON.stringify(data, null, 2)}`;
+        responseDiv.style.backgroundColor = '#d4edda';
+      } else {
+        const errorData = await response.json();
+        responseDiv.textContent = `❌ 조회 실패 (${response.status})\n응답: ${JSON.stringify(errorData, null, 2)}`;
+        responseDiv.style.backgroundColor = '#f8d7da';
+      }
+    } catch (error) {
+      const responseDiv = document.getElementById('userResponse');
+      responseDiv.style.display = 'block';
+      responseDiv.textContent = `⚠️ 요청 실패: ${error.message}`;
+      responseDiv.style.backgroundColor = '#f8d7da';
+    }
+  }
+
+  // 개인정보 조회 함수 수정
+  async function getPersonalInfo() {
+    try {
+      const response = await fetch('/api/profile/personal-info', {
+        method: 'GET',
+        credentials: 'include'
+      });
+
+      const responseDiv = document.getElementById('personalInfoResponse');
+      responseDiv.style.display = 'block';
+
+      if (response.ok) {
+        const data = await response.json();
+        responseDiv.textContent = `✅ 조회 성공!\n응답: ${JSON.stringify(data, null, 2)}`;
+        responseDiv.style.backgroundColor = '#d4edda';
+
+        // 폼에 현재 값 자동 입력
+        document.getElementById('updateName').value = data.name || '';
+
+        // 비밀번호 필드 조건부 표시 ✨
+        const passwordGroup = document.getElementById('passwordGroup');
+        const passwordField = document.getElementById('updatePassword');
+
+        if (data.isChangePassword) {
+          // 로컬 로그인: 비밀번호 필드 활성화
+          passwordGroup.style.display = 'block';
+          passwordField.required = true;
+          passwordField.placeholder = '새로운 비밀번호 입력';
+        } else {
+          // 소셜 로그인: 비밀번호 필드 비활성화
+          passwordGroup.style.display = 'none';
+          passwordField.required = false;
+          passwordField.value = '';
+        }
+
+      } else {
+        const errorData = await response.json();
+        responseDiv.textContent = `❌ 조회 실패 (${response.status})\n응답: ${JSON.stringify(errorData, null, 2)}`;
+        responseDiv.style.backgroundColor = '#f8d7da';
+      }
+    } catch (error) {
+      const responseDiv = document.getElementById('personalInfoResponse');
+      responseDiv.style.display = 'block';
+      responseDiv.textContent = `⚠️ 요청 실패: ${error.message}`;
+      responseDiv.style.backgroundColor = '#f8d7da';
+    }
+  }
+
+  // 개인정보 수정 함수 수정
+  async function updatePersonalInfo() {
+    const name = document.getElementById('updateName').value;
+    const password = document.getElementById('updatePassword').value;
+    const passwordGroup = document.getElementById('passwordGroup');
+
+    if (!name) {
+      alert('이름을 입력하세요');
+      return;
+    }
+
+    // 비밀번호 필드가 표시되어 있을 때만 비밀번호 필수 검증
+    if (passwordGroup.style.display !== 'none' && !password) {
+      alert('비밀번호를 입력하세요');
+      return;
+    }
+
+    const requestBody = { name: name };
+
+    // 비밀번호 필드가 활성화되어 있고 값이 있을 때만 포함
+    if (passwordGroup.style.display !== 'none' && password) {
+      requestBody.password = password;
+    }
+
+    try {
+      const response = await fetch('/api/profile/personal-info', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(requestBody)
+      });
+
+      const responseDiv = document.getElementById('updateResponse');
+      responseDiv.style.display = 'block';
+
+      if (response.ok) {
+        const data = await response.json();
+        responseDiv.textContent = `✅ 수정 성공!\n응답: ${JSON.stringify(data, null, 2)}`;
+        responseDiv.style.backgroundColor = '#d4edda';
+
+        // 비밀번호 필드 초기화 (표시되어 있는 경우에만)
+        if (passwordGroup.style.display !== 'none') {
+          document.getElementById('updatePassword').value = '';
+        }
+
+        // 로그인 상태 다시 확인 (이름 변경 반영)
+        setTimeout(checkLoginStatus, 500);
+      } else {
+        const errorData = await response.json();
+        responseDiv.textContent = `❌ 수정 실패 (${response.status})\n응답: ${JSON.stringify(errorData, null, 2)}`;
+        responseDiv.style.backgroundColor = '#f8d7da';
+      }
+    } catch (error) {
+      const responseDiv = document.getElementById('updateResponse');
+      responseDiv.style.display = 'block';
+      responseDiv.textContent = `⚠️ 요청 실패: ${error.message}`;
+      responseDiv.style.backgroundColor = '#f8d7da';
+    }
+  }
+
+</script>
+</body>
+</html>
