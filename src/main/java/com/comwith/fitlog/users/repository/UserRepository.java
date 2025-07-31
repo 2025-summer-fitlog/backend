@@ -2,6 +2,8 @@ package com.comwith.fitlog.users.repository;
 
 import com.comwith.fitlog.users.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
@@ -16,4 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByLoginMethodAndProviderId(String loginMethod, String providerId);
 
     boolean existsByEmail(String email);
+
+    @Query("SELECT u FROM User u WHERE u.username = :identifier OR u.providerId = :identifier")
+    Optional<User> findByUsernameOrProviderId(@Param("identifier") String identifier);
 }
