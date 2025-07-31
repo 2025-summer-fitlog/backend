@@ -50,6 +50,7 @@ public class WebSecurityConfig {
                                 "/api/users/reset-password",
                                 "/password-reset", "/password-reset/**",
                                 "/api/users/register", "/api/users/login", "/api/users/me",
+                                "/api/log/daily/**",
                                 "/oauth2/**",
                                 "/login/oauth2/code/**",
                                 "/logout",
