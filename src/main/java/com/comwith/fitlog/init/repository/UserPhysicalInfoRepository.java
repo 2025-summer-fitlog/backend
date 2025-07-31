@@ -1,0 +1,12 @@
+package com.comwith.fitlog.init.repository;
+
+
+import com.comwith.fitlog.init.entity.UserPhysicalInfo;
+import com.comwith.fitlog.users.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface UserPhysicalInfoRepository extends JpaRepository<UserPhysicalInfo, Long> {
+    Optional<UserPhysicalInfo> findByUser(User user);
+}
