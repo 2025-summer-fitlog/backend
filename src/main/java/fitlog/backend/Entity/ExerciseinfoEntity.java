@@ -23,9 +23,5 @@ public class ExerciseinfoEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private PlaceEntity place;
 
-    //키워드
-    @ElementCollection
-    @CollectionTable(name = "exercise_keywords", joinColumns = @JoinColumn(name="exercise_id"))
-    @Column(name = "keyword")
-    private List<String> keywords = new ArrayList<>();
+
 }
