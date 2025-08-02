@@ -21,6 +21,7 @@ public class ExerciseinfoEntity {
 
     //장소 연결
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     private PlaceEntity place;
 
 
