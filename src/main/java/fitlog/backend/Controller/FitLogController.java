@@ -1,21 +1,30 @@
 package fitlog.backend.Controller;
 
+import fitlog.backend.Dto.PlaceDto;
 import fitlog.backend.Entity.ExerciseinfoEntity;
 import fitlog.backend.Entity.MusicEntity;
 import fitlog.backend.Entity.PlaceEntity;
 import fitlog.backend.Entity.RecommendationEntity;
+import fitlog.backend.Repository.ExerciseinfoRepository;
 import fitlog.backend.Service.FitLogService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/fitlog")
 @RequiredArgsConstructor
 
 public class FitLogController {
+
+    @Autowired
+    private ExerciseinfoRepository exerciseinfoRepository;
 
     private final FitLogService fitLogService;
 
@@ -25,13 +34,27 @@ public class FitLogController {
         return fitLogService.getAllPlaces();
     }
 
-    //운동정보
-    @GetMapping ("/exercises")
-    public List<ExerciseinfoEntity> getExercises(@RequestParam Long placeId) {
-        return fitLogService.getExercisesByPlace(placeId);
+    @GetMapping("/places/{placeId}")
+    public ResponseEntity<PlaceEntity> getPlaceById(@PathVariable Long placeId) {
+        return fitLogService.getPlaceById(placeId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    //운동 추천 영상
+    // 장소에 따른 운동 정보
+    @GetMapping("/exercises/{placeId}")
+    public ResponseEntity<List<ExerciseinfoEntity>> getExercisesByPlace(@PathVariable Long placeId) {
+        List<ExerciseinfoEntity> exercises = fitLogService.getExercisesByPlaceId(placeId);
+        if (exercises.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(exercises);
+    }
+
+
+    //운동정보
+
+    //운동 추천 영상, recommendations?keywords=달리기
     @GetMapping("/recommendations")
     public List<RecommendationEntity> getRecommendedVideos(@RequestParam List<String> keywords) {
         return fitLogService.recommendVideosByKeywords(keywords);
@@ -48,16 +71,20 @@ public class FitLogController {
     //사용자 저장 영상 추가
     @PostMapping("/users/{userId}/saved-video/{recommendationId}")
     public ResponseEntity<String> saveUserRecommendation(@PathVariable Long userId,
-                                                        @RequestParam Long recommendationId) {
+                                                         @PathVariable Long recommendationId) {
         fitLogService.saveUserRecommendation(userId, recommendationId);
         return ResponseEntity.ok("추천 영상 저장 완료!");
     }
 
     //사용자 저장 영상 목록 조회
-    @GetMapping("/users/{userId}/saved-videos")
-    public ResponseEntity<List<RecommendationEntity>> getUserSavedVideos(@PathVariable Long userId){
-        return ResponseEntity.ok(fitLogService.getUserSavedVideos(userId));
+    @GetMapping("/users/{userId}/saved-videos-by-type")
+    public ResponseEntity<List<RecommendationEntity>> getUserSavedVideosByType(
+            @PathVariable Long userId,
+            @RequestParam String type) {
+        List<RecommendationEntity> videos = fitLogService.getUserSavedVideosByType(userId, type);
+        return ResponseEntity.ok(videos);
     }
+
 
     //음악 태그
     @GetMapping("/tags/{tagId}/music")
