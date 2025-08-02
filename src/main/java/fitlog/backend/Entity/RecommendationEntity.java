@@ -24,7 +24,7 @@ public class RecommendationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private  String title;
-    private String videoUrl;
+    private String url;
 
     @ElementCollection
     @CollectionTable(name = "recommendation_keywords",
@@ -33,17 +33,18 @@ public class RecommendationEntity {
     private List<String> keywords;
 
     @Lob
-    private String warmupText; //준비 운동
+    private String preparation; //준비 운동
 
     @Lob //주의사항
-    private String cautionText;
+    private String precautions;
 
     @Lob //보조기구 추천
-    private String equipmentText;
+    private String equipment;
 
     @Lob //운동 효과
-    private String effectText;
+    private String effect;
 
     //ex.하체,상체
-private  String bodyPart;
+private  String type;
+
 }
