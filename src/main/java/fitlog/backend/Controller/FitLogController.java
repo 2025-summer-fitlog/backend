@@ -1,6 +1,5 @@
 package fitlog.backend.Controller;
 
-import fitlog.backend.Dto.PlaceDto;
 import fitlog.backend.Entity.ExerciseinfoEntity;
 import fitlog.backend.Entity.MusicEntity;
 import fitlog.backend.Entity.PlaceEntity;
@@ -13,19 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/fitlog")
 @RequiredArgsConstructor
 
 public class FitLogController {
-
-    @Autowired
-    private ExerciseinfoRepository exerciseinfoRepository;
-
     private final FitLogService fitLogService;
 
     //장소

@@ -85,4 +85,21 @@ public class FitLogService {
         int idx = new Random().nextInt(songs.size());
         return songs.get(idx);
     }
+
+    public List<RecommendationEntity> getUserSavedVideosByType(Long userId, String type) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. userId: " + userId));
+        return user.getSavedVideos().stream()
+                .filter(video -> type.equals(video.getType()))
+                .toList();
+    }
+
+    public List<ExerciseinfoEntity> getExercisesByPlaceId(Long placeId) {
+        return exerciseinfoRepository.findByPlaceId(placeId);
+    }
+
+    public Optional<PlaceEntity> getPlaceById(Long placeId) {
+        return placeRepository.findById(placeId);
+    }
+
 }
