@@ -24,6 +24,7 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f">
+      <console name="fitlogDB" type="STANDARD" schema="fitlog" session="Main"><![CDATA[SHOW VARIABLES LIKE 'wait_timeout';]]></console>
       <console name="testDB" type="STANDARD" schema="mysql" session="Main"><![CDATA[show tables;]]></console>
     </connection>
   </component>
@@ -31,10 +32,154 @@
     <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files />
+    <open-files>
+      <object connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" object-ref="schemas/fitlog/tables/musictag_entity" />
+    </open-files>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" />
+  </component>
+  <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="fitlog.user_saved_videos" active-filter-id="">
+      <filter id="ebd582d7-96d0-4b9f-8914-448af7a09727" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="recommendation_id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="test.exerciseinfo_entity" active-filter-id="EMPTY_FILTER">
+      <filter id="f25c86d0-839c-4328-9de3-b28a0160b0b8" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="fitlog.music_entity" active-filter-id="EMPTY_FILTER">
+      <filter id="b66bd2f7-0a74-4518-b99a-578016b18ec5" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="test.users" active-filter-id="EMPTY_FILTER">
+      <filter id="5ce49466-bc87-429b-a72f-60d9f38be23e" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="test.exercise_keyword" active-filter-id="EMPTY_FILTER">
+      <filter id="abdaa404-c875-45c7-b29b-b5583e4b65a4" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="test.exercise_keywords" active-filter-id="">
+      <filter id="c4a62200-c490-4003-ae54-068b4ab82c87" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="exercise_id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="test.exercise_info" active-filter-id="EMPTY_FILTER">
+      <filter id="8cbb4d25-a892-48c9-b0a4-3e04ebf14752" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="test.recommendation_entity" active-filter-id="">
+      <filter id="eeff1e68-ce90-4d3f-b73e-ab0dcd2c5c7e" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="test.user_entity" active-filter-id="EMPTY_FILTER">
+      <filter id="4a3c698f-6fdc-4d3b-bfad-9aa973aacd21" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="test.user_saved_videos" active-filter-id="EMPTY_FILTER">
+      <filter id="c0d33611-9e21-48c0-a376-842b87218930" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="recommendation_id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="test.recommendation_keywords" active-filter-id="EMPTY_FILTER">
+      <filter id="b55b74b9-4949-4db9-8b77-17bff1841c9c" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="keyword" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="fitlog.recommendation_entity" active-filter-id="EMPTY_FILTER">
+      <filter id="d2447dad-8843-4666-9132-c261db63a7c3" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="test.music_entity" active-filter-id="EMPTY_FILTER">
+      <filter id="941a0399-c123-4928-a1d8-dde55f489eb9" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="test.recommendations" active-filter-id="EMPTY_FILTER">
+      <filter id="86c3c7ee-2a92-4fd0-87c1-78cd9a119b80" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="test.musictag_entity" active-filter-id="">
+      <filter id="36c9c33b-254d-49cc-8498-72bd54f11be6" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="fitlog.user_entity" active-filter-id="">
+      <filter id="b33dd462-a14f-4698-bbdc-437ba8aaa297" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="test.video_keyword" active-filter-id="EMPTY_FILTER">
+      <filter id="8a859e74-3cba-4565-b8cc-bdaf6f89b719" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="exercise_keyword_id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="fitlog.musictag_entity" active-filter-id="EMPTY_FILTER">
+      <filter id="e79c6ecc-edce-420f-b68b-a5a0ce7d9dd6" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="test.user_saved_video" active-filter-id="EMPTY_FILTER">
+      <filter id="fe08736b-2158-44b7-8966-505e344ce463" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="fitlog.exerciseinfo_entity" active-filter-id="EMPTY_FILTER">
+      <filter id="091b15d8-6176-4f3e-b522-6a1c49efb873" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="test.video" active-filter-id="EMPTY_FILTER">
+      <filter id="69ed62a6-060a-4c48-a32c-e6f6bfa130f3" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="fitlog.recommendation_keywords" active-filter-id="">
+      <filter id="2a87c7b7-c2d9-4964-b7d6-cb71c6e2edce" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="keyword" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="fitlog.exercise_keyword" active-filter-id="">
+      <filter id="2cdac55c-d250-4fac-b1f5-bdfe3c77c2c4" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="exercise_id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="test.music_tag" active-filter-id="">
+      <filter id="8493e40c-daa1-414e-bdf5-f9886dd92c35" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="test.place_entity" active-filter-id="EMPTY_FILTER">
+      <filter id="dd19de0b-ddb9-4fbe-8820-0d1fec7ce374" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="test.place" active-filter-id="EMPTY_FILTER">
+      <filter id="9195c884-73d3-4a72-8c9a-ef6e74b3ebfa" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="fitlog.place" active-filter-id="EMPTY_FILTER">
+      <filter id="5f998570-2e16-449b-8afc-199da690d778" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="33a5c5d8-ad40-4260-a9ce-e43da3a8791f" dataset="test.music" active-filter-id="EMPTY_FILTER">
+      <filter id="e040f135-ea86-45a6-afbe-4c58e77d1989" name="Filter" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="id" operator="=" value="" active="true" />
+      </filter>
+    </filter-actions>
   </component>
   <component name="DBNavigator.Project.ObjectQuickFilterManager">
     <last-used-operator value="EQUAL" />
@@ -69,7 +214,7 @@
           <session-user value="DB_USER@localhost" />
         </database>
         <properties>
-          <auto-commit value="false" />
+          <auto-commit value="true" />
         </properties>
         <ssh-settings>
           <active value="false" />
