@@ -1,22 +1,32 @@
 package com.comwith.fitlog.log.controller;
 
-import com.comwith.fitlog.log.dto.WorkoutRecordRequest;
-import com.comwith.fitlog.log.dto.WorkoutRecordResponse;
-import com.comwith.fitlog.log.dto.WorkoutStatsResponse;
-import com.comwith.fitlog.log.dto.AIFeedbackResponse;
+import com.comwith.fitlog.log.dto.*;
+import com.comwith.fitlog.log.service.FileStorageService;
+import com.comwith.fitlog.log.service.WorkoutLogService;
 import com.comwith.fitlog.log.service.WorkoutRecordService;
 import com.comwith.fitlog.log.service.AIFeedbackService;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+/*
 @RestController
 @RequestMapping("/api/log")
 @Validated
@@ -65,6 +75,7 @@ public class WorkoutLogController {
         return ResponseEntity.ok(response);
     }
 
+
     // 5. 주간 기록 조회 (차트용)
     @GetMapping("/weekly")
     public ResponseEntity<List<WorkoutStatsResponse>> getWeeklyStats(
@@ -104,4 +115,157 @@ public class WorkoutLogController {
         workoutRecordService.clearAllRecords();
         return ResponseEntity.noContent().build();
     }
+}
+
+ */
+
+@RestController
+@RequestMapping("/api/log/daily")
+@RequiredArgsConstructor
+public class WorkoutLogController {
+
+    private final WorkoutLogService workoutLogService;
+    private final AIFeedbackService aiFeedbackService;
+    private final FileStorageService fileStorageService;
+    private final WorkoutRecordService workoutRecordService;
+
+    // 1) 날짜별 운동기록 묶음 생성
+//    @PostMapping
+//    public ResponseEntity<WorkoutLogResponse> createLog(@RequestBody WorkoutLogRequest request) {
+//        WorkoutLogResponse response = workoutLogService.createLog(request);
+//        return ResponseEntity.ok(response);
+//    }
+//    // ver2
+//    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<WorkoutLogResponse> createLogWithPhotos(
+//            @RequestPart("data") @Valid WorkoutLogRequest request,
+//            @RequestPart(value = "photos", required = false) List<MultipartFile> photos) {
+//
+//        // 사진 개수 검증
+//        if (photos != null && photos.size() > 5) {
+//            return ResponseEntity.badRequest().body(null);
+//        }
+//
+//        WorkoutLogResponse response = workoutLogService.createLogWithPhotos(request, photos);
+//        return ResponseEntity.ok(response);
+//    }
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<WorkoutLogResponse> createLogWithPhotos(
+            @RequestPart("data") String jsonData,
+            @RequestPart(value = "photos", required = false) List<MultipartFile> photos) {
+
+        try {
+            // ObjectMapper 설정 추가
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule()); // LocalDate 처리용
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+            // JSON 파싱
+            WorkoutLogRequest request = objectMapper.readValue(jsonData, WorkoutLogRequest.class);
+
+            WorkoutLogResponse response = workoutLogService.createLogWithPhotos(request, photos);
+            return ResponseEntity.ok(response);
+
+        } catch (JsonProcessingException e) {
+            // JSON 파싱 에러 처리
+            return ResponseEntity.badRequest()
+                    .body(null); // 또는 에러 메시지 포함한 응답
+        }
+    }
+
+
+
+
+    // 2) 날짜별 운동기록 묶음 수정
+    @PutMapping("/{logId}")
+    public ResponseEntity<WorkoutLogResponse> updateLog(@PathVariable Long logId, @RequestBody WorkoutLogRequest request) {
+        WorkoutLogResponse response = workoutLogService.updateLog(logId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    // 3) 날짜별 운동기록 묶음 조회 (쿼리 파라미터로 날짜 지정)
+    @GetMapping
+    public ResponseEntity<WorkoutLogResponse> getDailyLog(@RequestParam("date") String dateStr) {
+        LocalDate date = LocalDate.parse(dateStr);
+        WorkoutLogResponse response = workoutLogService.getDailyLog(date);
+        return ResponseEntity.ok(response);
+    }
+
+    // 4) 일간 ~ 월간 운동기록 범위 조회
+    @GetMapping("/range")
+    public ResponseEntity<List<WorkoutLogResponse>> getLogsInRange(
+            @RequestParam("start") String startDateStr,
+            @RequestParam("end") String endDateStr) {
+        LocalDate start = LocalDate.parse(startDateStr);
+        LocalDate end = LocalDate.parse(endDateStr);
+        List<WorkoutLogResponse> responses = workoutLogService.getLogsBetween(start, end);
+        return ResponseEntity.ok(responses);
+    }
+
+    // 오늘 기록
+    @GetMapping("/today")
+    public ResponseEntity<WorkoutLogResponse> getTodayLog() {
+        Optional<WorkoutLogResponse> log = workoutLogService.getTodayLog();
+
+        return log.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // 주간 기록
+    @GetMapping("/weekly")
+    public ResponseEntity<List<WorkoutLogResponse>> getWeeklyLogs(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        List<WorkoutLogResponse> logs = workoutLogService.getWeeklyLogs(date);
+        return ResponseEntity.ok(logs);
+    }
+
+    // 월간 기록
+    @GetMapping("/monthly")
+    public ResponseEntity<List<WorkoutLogResponse>> getMonthlyLogs(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+
+        List<WorkoutLogResponse> logs = workoutLogService.getMonthlyLogs(date);
+        return ResponseEntity.ok(logs);
+    }
+
+
+    // 5) 운동기록 묶음에 사진 추가 (파일 업로드)
+    @PostMapping("/{logId}/photos")
+    public ResponseEntity<WorkoutLogResponse> addPhotos(
+            @PathVariable Long logId,
+            @RequestParam("files") List<MultipartFile> files) {
+        if (files == null || files.isEmpty()) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        // 실제 파일 저장 처리: 기존 FileStorageService 활용
+        List<String> uploadedUrls = files.stream()
+                .map(fileStorageService::storeFile)
+                .collect(Collectors.toList());
+        WorkoutLogResponse response = workoutLogService.addPhotos(logId, uploadedUrls);
+        return ResponseEntity.ok(response);
+    }
+
+
+    // 6) 날짜별 운동기록 묶음 삭제
+    @DeleteMapping("/{logId}")
+    public ResponseEntity<Void> deleteLog(@PathVariable Long logId) {
+        workoutLogService.removeLog(logId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 7) AI 피드백 요청 (일간)
+    @GetMapping("/feedback/daily")
+    public ResponseEntity<AIFeedbackResponse> getDailyFeedback(@RequestParam("date") String dateStr) {
+        LocalDate date = LocalDate.parse(dateStr);
+        AIFeedbackResponse feedback = aiFeedbackService.generateDailyFeedback(date);
+        return ResponseEntity.ok(feedback);
+    }
+
+    // 8) AI 피드백 요청 (주간, 월간 등 필요 시 추가 가능)
+    // 예:
+    // @GetMapping("/feedback/range")
+    // public ResponseEntity<AIFeedbackResponse> getRangeFeedback(@RequestParam("start") String startStr, @RequestParam("end") String endStr) { ... }
 }

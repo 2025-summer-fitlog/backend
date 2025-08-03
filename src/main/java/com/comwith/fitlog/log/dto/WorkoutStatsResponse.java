@@ -18,4 +18,5 @@ public class WorkoutStatsResponse {
     private Integer averageScore;
     private Integer totalWorkouts;
     private List<WorkoutRecordResponse> records;
+
 }
