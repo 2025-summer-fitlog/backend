@@ -9,7 +9,5 @@ import java.util.List;
 @Repository
 public interface ExerciseinfoRepository extends JpaRepository<ExerciseinfoEntity,Long>{
     // 장소랑 연결
-    List<ExerciseinfoEntity> findByPlaceEntityId(Long placeId);
-
     List<ExerciseinfoEntity> findByPlaceId(Long placeId);
 }

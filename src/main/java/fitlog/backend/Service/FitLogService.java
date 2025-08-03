@@ -3,14 +3,15 @@ package fitlog.backend.Service;
 import fitlog.backend.Entity.*;
 import fitlog.backend.Repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,40 +24,27 @@ public class FitLogService {
     private final PlaceRepository placeRepository;
     private final ExerciseinfoRepository exerciseinfoRepository;
 
-    // 장소 추천
+    // 전체 장소 조회
     public List<PlaceEntity> getAllPlaces(){
         return placeRepository.findAll();
     }
 
-    //장소 선택 후 운동 정보 선택
-    public List<ExerciseinfoEntity> getExercisesByPlace(Long placeId) {
+    // 장소별 운동 정보 조회
+    public List<ExerciseinfoEntity> getExercisesByPlaceId(Long placeId) {
         return exerciseinfoRepository.findByPlaceId(placeId);
     }
 
-    //운동 영상 선택(3개정도)
+    // 키워드 기반 운동 영상 추천 (최대 3개)
     public List<RecommendationEntity> recommendVideosByKeywords(List<String> keywords) {
-        return recommendationRepository.
-                findTop3ByKeywordsIn(keywords, PageRequest.of(0, 3));
+        return recommendationRepository.findTop3ByKeywordsIn(keywords, PageRequest.of(0, 3));
     }
 
-    //운동추천 영상 전체 조회
-    public List<RecommendationEntity> getRecommendations(){
-        return recommendationRepository.findAll();
-    }
-
-    //특정 운동추천 영상 조회
+    // 특정 운동 추천 영상 조회
     public Optional<RecommendationEntity> getRecommendationById(Long id){
         return recommendationRepository.findById(id);
     }
 
-    //사용자 저장 영상 목록 조회
-    public List<RecommendationEntity> getUserSavedVideos(Long userId){
-        return userRepository.findById(userId)
-                .map(UserEntity::getSavedVideos)
-                .orElse(List.of());
-    }
-
-    //사용자 저장 영상 추가
+    // 사용자 저장 영상 추가 (중복 저장 방지)
     public void saveUserRecommendation(Long userId, Long recommendationId) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. userId: " + userId));
@@ -64,42 +52,48 @@ public class FitLogService {
         RecommendationEntity recommendation = recommendationRepository.findById(recommendationId)
                 .orElseThrow(() -> new IllegalArgumentException("추천 영상을 찾을 수 없습니다. recommendationId: " + recommendationId));
 
-        // 이미 저장된 영상인지 확인
         if (!user.getSavedVideos().contains(recommendation)) {
             user.getSavedVideos().add(recommendation);
         }
         userRepository.save(user);
     }
 
-    @Transactional(readOnly = true) // 읽기 전용
+    // 사용자 저장 영상 전체 조회 (사용자 없으면 예외 발생)
+    @Transactional(readOnly = true)
     public List<RecommendationEntity> getUserSavedRecommendations(Long userId) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. userId: " + userId));
         return user.getSavedVideos();
     }
 
+    // 사용자 저장 영상 중 특정 type 필터링 조회
+    @Transactional(readOnly = true)
+    public List<RecommendationEntity> getUserSavedVideosByType(Long userId, String type) {
+        List<RecommendationEntity> savedVideos = getUserSavedRecommendations(userId);
+        return savedVideos.stream()
+                .filter(video -> video.getType() != null && video.getType().equalsIgnoreCase(type))
+                .collect(Collectors.toList());
+    }
+
+    // 사용자 저장 영상 type별 그룹핑 조회
+    @Transactional(readOnly = true)
+    public Map<String, List<RecommendationEntity>> getUserSavedVideosGroupedByType(Long userId) {
+        List<RecommendationEntity> videos = getUserSavedRecommendations(userId);
+        return videos.stream()
+                .collect(Collectors.groupingBy(RecommendationEntity::getType));
+    }
+
+    // 태그 기반 랜덤 음악 추천
     @Transactional(readOnly = true)
     public MusicEntity getRandomSongByTag(Long tagId) {
-        List<MusicEntity> songs = MusicRepository.findByMusictagEntityId(tagId);
+        List<MusicEntity> songs = musicRepository.findByTag_Id(tagId);
         if (songs.isEmpty()) return null;
         int idx = new Random().nextInt(songs.size());
         return songs.get(idx);
     }
 
-    public List<RecommendationEntity> getUserSavedVideosByType(Long userId, String type) {
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. userId: " + userId));
-        return user.getSavedVideos().stream()
-                .filter(video -> type.equals(video.getType()))
-                .toList();
-    }
-
-    public List<ExerciseinfoEntity> getExercisesByPlaceId(Long placeId) {
-        return exerciseinfoRepository.findByPlaceId(placeId);
-    }
-
+    // 특정 장소 조회
     public Optional<PlaceEntity> getPlaceById(Long placeId) {
         return placeRepository.findById(placeId);
     }
-
 }

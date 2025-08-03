@@ -12,5 +12,5 @@ public interface MusicRepository extends JpaRepository<MusicEntity, Long> {
         return null;
     }
 
-    List<MusicEntity> findByMusicTag_Id(Long tagId);
+    List<MusicEntity> findByTag_Id(Long tagId);
 }

@@ -1,5 +1,6 @@
 package fitlog.backend.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,6 +18,7 @@ public class MusicEntity {
 
     //태그랑 연결
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     private MusictagEntity tag;
 
 }

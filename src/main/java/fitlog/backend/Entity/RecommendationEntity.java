@@ -15,7 +15,7 @@ import lombok.Builder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "recommendations")
+@Table(name = "recommendation_entity")
 
 
 public class RecommendationEntity {
