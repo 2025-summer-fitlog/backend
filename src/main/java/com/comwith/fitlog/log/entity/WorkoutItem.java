@@ -28,4 +28,9 @@ public class WorkoutItem {
 
     @Column(nullable = false)
     private Integer score;
+
+    public Integer getScore() {
+        return score;
+    }
+
 }

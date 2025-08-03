@@ -10,4 +10,5 @@ public class WorkoutItemResponse {
     private String workoutName;
     private WorkoutStatus status;
     private String statusSymbol;
+    private Integer score;
 }

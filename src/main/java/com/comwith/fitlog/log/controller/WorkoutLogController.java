@@ -6,17 +6,24 @@ import com.comwith.fitlog.log.service.WorkoutLogService;
 import com.comwith.fitlog.log.service.WorkoutRecordService;
 import com.comwith.fitlog.log.service.AIFeedbackService;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /*
@@ -67,6 +74,7 @@ public class WorkoutLogController {
         WorkoutStatsResponse response = workoutRecordService.getDailyStats(date);
         return ResponseEntity.ok(response);
     }
+
 
     // 5. 주간 기록 조회 (차트용)
     @GetMapping("/weekly")
@@ -119,13 +127,55 @@ public class WorkoutLogController {
     private final WorkoutLogService workoutLogService;
     private final AIFeedbackService aiFeedbackService;
     private final FileStorageService fileStorageService;
+    private final WorkoutRecordService workoutRecordService;
 
     // 1) 날짜별 운동기록 묶음 생성
-    @PostMapping
-    public ResponseEntity<WorkoutLogResponse> createLog(@RequestBody WorkoutLogRequest request) {
-        WorkoutLogResponse response = workoutLogService.createLog(request);
-        return ResponseEntity.ok(response);
+//    @PostMapping
+//    public ResponseEntity<WorkoutLogResponse> createLog(@RequestBody WorkoutLogRequest request) {
+//        WorkoutLogResponse response = workoutLogService.createLog(request);
+//        return ResponseEntity.ok(response);
+//    }
+//    // ver2
+//    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<WorkoutLogResponse> createLogWithPhotos(
+//            @RequestPart("data") @Valid WorkoutLogRequest request,
+//            @RequestPart(value = "photos", required = false) List<MultipartFile> photos) {
+//
+//        // 사진 개수 검증
+//        if (photos != null && photos.size() > 5) {
+//            return ResponseEntity.badRequest().body(null);
+//        }
+//
+//        WorkoutLogResponse response = workoutLogService.createLogWithPhotos(request, photos);
+//        return ResponseEntity.ok(response);
+//    }
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<WorkoutLogResponse> createLogWithPhotos(
+            @RequestPart("data") String jsonData,
+            @RequestPart(value = "photos", required = false) List<MultipartFile> photos) {
+
+        try {
+            // ObjectMapper 설정 추가
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule()); // LocalDate 처리용
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+            // JSON 파싱
+            WorkoutLogRequest request = objectMapper.readValue(jsonData, WorkoutLogRequest.class);
+
+            WorkoutLogResponse response = workoutLogService.createLogWithPhotos(request, photos);
+            return ResponseEntity.ok(response);
+
+        } catch (JsonProcessingException e) {
+            // JSON 파싱 에러 처리
+            return ResponseEntity.badRequest()
+                    .body(null); // 또는 에러 메시지 포함한 응답
+        }
     }
+
+
+
 
     // 2) 날짜별 운동기록 묶음 수정
     @PutMapping("/{logId}")
@@ -152,6 +202,35 @@ public class WorkoutLogController {
         List<WorkoutLogResponse> responses = workoutLogService.getLogsBetween(start, end);
         return ResponseEntity.ok(responses);
     }
+
+    // 오늘 기록
+    @GetMapping("/today")
+    public ResponseEntity<WorkoutLogResponse> getTodayLog() {
+        Optional<WorkoutLogResponse> log = workoutLogService.getTodayLog();
+
+        return log.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // 주간 기록
+    @GetMapping("/weekly")
+    public ResponseEntity<List<WorkoutLogResponse>> getWeeklyLogs(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        List<WorkoutLogResponse> logs = workoutLogService.getWeeklyLogs(date);
+        return ResponseEntity.ok(logs);
+    }
+
+    // 월간 기록
+    @GetMapping("/monthly")
+    public ResponseEntity<List<WorkoutLogResponse>> getMonthlyLogs(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+
+        List<WorkoutLogResponse> logs = workoutLogService.getMonthlyLogs(date);
+        return ResponseEntity.ok(logs);
+    }
+
 
     // 5) 운동기록 묶음에 사진 추가 (파일 업로드)
     @PostMapping("/{logId}/photos")

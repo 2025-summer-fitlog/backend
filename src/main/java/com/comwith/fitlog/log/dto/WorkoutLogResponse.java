@@ -15,6 +15,7 @@ public class WorkoutLogResponse {
     private String memo;
     private List<String> photoUrls;
     private List<WorkoutItemResponse> workouts;
+    private Integer averageScore;
 }
 
 
