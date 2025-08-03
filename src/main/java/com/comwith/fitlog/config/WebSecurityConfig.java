@@ -25,15 +25,6 @@ public class WebSecurityConfig {
         this.userService = userService;
     }
 
-//    @Bean
-//    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
-//
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return bCryptPasswordEncoder();
-//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
