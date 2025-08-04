@@ -51,6 +51,7 @@ public class WebSecurityConfig {
                                 "/oauth2/**",
                                 "/login/oauth2/code/**",
                                 "/logout",
+                                "/fitlog/**",
                                 "/custom-logout",
                                 "/.well-known/**",
                                 "/error",
