@@ -25,6 +25,7 @@ public class RecommendationEntity {
     private Long id;
     private  String title;
     private String url;
+    private String description; // new - sql dump 파일에 있던 내용 추가
 
     @ElementCollection
     @CollectionTable(name = "recommendation_keywords",
@@ -45,6 +46,6 @@ public class RecommendationEntity {
     private String effect;
 
     //ex.하체,상체
-private  String type;
+    private String type;
 
 }

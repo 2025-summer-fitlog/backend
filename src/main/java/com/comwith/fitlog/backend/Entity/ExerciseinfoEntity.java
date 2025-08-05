@@ -19,14 +19,21 @@ public class ExerciseinfoEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // private String name;
-    @Column(name = "exercise_name")
-    private String exerciseName;
+    // private String name; (exercise_name에서 name으로 수정)
+    // sql dump 파일과 달라서 수정함.
+    @Column(name = "name")
+    private String name;
 
     //장소 연결
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id")
     @JsonIgnore
     private PlaceEntity place;
+
+    // 관계 추가 (new)
+    @ElementCollection
+    @CollectionTable(name = "exercise_keyword", joinColumns = @JoinColumn(name = "exercise_id"))
+    @Column(name = "keyword")
+    private List<String> keywords;
 
     }
