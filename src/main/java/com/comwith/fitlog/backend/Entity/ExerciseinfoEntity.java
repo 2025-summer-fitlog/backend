@@ -30,10 +30,5 @@ public class ExerciseinfoEntity {
     @JsonIgnore
     private PlaceEntity place;
 
-    // 관계 추가 (new)
-    @ElementCollection
-    @CollectionTable(name = "exercise_keyword", joinColumns = @JoinColumn(name = "exercise_id"))
-    @Column(name = "keyword")
-    private List<String> keywords;
 
     }

@@ -1,5 +1,6 @@
 package com.comwith.fitlog.backend.Entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -27,11 +28,12 @@ public class RecommendationEntity {
     private String url;
     private String description; // new - sql dump 파일에 있던 내용 추가
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "recommendation_keywords",
             joinColumns = @JoinColumn(name = "recommendation_id"))
     @Column(name = "keyword")
-    private List<String> keywords;
+    private List<String> keywords = new ArrayList<>(); // null 방지
+
 
     @Lob
     private String preparation; //준비 운동

@@ -50,9 +50,6 @@ public class FitLogController {
         return ResponseEntity.ok(exercises);
     }
 
-
-    //운동정보
-
     //운동 추천 영상, recommendations?keywords=달리기
     @GetMapping("/recommendations")
     public List<RecommendationEntity> getRecommendedVideos(@RequestParam List<String> keywords) {
