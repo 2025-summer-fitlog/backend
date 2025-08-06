@@ -97,24 +97,24 @@
 #   `id` bigint(20) NOT NULL AUTO_INCREMENT,
 #   `watched_at` datetime(6) DEFAULT NULL,
 #   `recommendation_id` bigint(20) DEFAULT NULL,
-#   `user_id` varchar(255) DEFAULT NULL,
+#   `user_id` bigint(20) DEFAULT NULL,
 #   PRIMARY KEY (`id`),
 #   KEY `FKhq2558w96y8j965t0x3p5j5w` (`recommendation_id`),
 #   KEY `FKk1057k1g50s5d3h3s5h83g0b` (`user_id`),
 #   CONSTRAINT `FKhq2558w96y8j965t0x3p5j5w` FOREIGN KEY (`recommendation_id`) REFERENCES `recommendation_entity` (`id`),
-#   CONSTRAINT `FKk1057k1g50s5d3h3s5h83g0b` FOREIGN KEY (`user_id`) REFERENCES `user_entity` (`user_id`)
+#   CONSTRAINT `FKk1057k1g50s5d3h3s5h83g0b` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 # ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 #
 # CREATE TABLE IF NOT EXISTS `user_saved_videos` (
 #   `id` bigint(20) NOT NULL AUTO_INCREMENT,
 #   `saved_at` datetime(6) DEFAULT NULL,
 #   `recommendation_id` bigint(20) DEFAULT NULL,
-#   `user_id` varchar(255) DEFAULT NULL,
+#   `user_id` bigint(20) DEFAULT NULL,
 #   PRIMARY KEY (`id`),
 #   KEY `FKi2560i2g56c80c2f4r6p8l9e` (`recommendation_id`),
 #   KEY `FKs5769o9s54j4r4h2t1h2v3w1` (`user_id`),
 #   CONSTRAINT `FKi2560i2g56c80c2f4r6p8l9e` FOREIGN KEY (`recommendation_id`) REFERENCES `recommendation_entity` (`id`),
-#   CONSTRAINT `FKs5769o9s54j4r4h2t1h2v3w1` FOREIGN KEY (`user_id`) REFERENCES `user_entity` (`user_id`)
+#   CONSTRAINT `FKs5769o9s54j4r4h2t1h2v3w1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 # ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 #
 # SET FOREIGN_KEY_CHECKS = 1;
