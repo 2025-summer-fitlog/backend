@@ -1,20 +1,20 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- 자식 테이블 먼저 DROP
---DROP TABLE IF EXISTS user_saved_videos;
---DROP TABLE IF EXISTS user_watched_videos;
---DROP TABLE IF EXISTS exercise_keyword;
+-- DROP TABLE IF EXISTS user_saved_videos;
+-- DROP TABLE IF EXISTS user_watched_videos;
+-- DROP TABLE IF EXISTS exercise_keyword;
 
 -- 그런 다음 중간 부모들
---DROP TABLE IF EXISTS recommendation_entity;
---DROP TABLE IF EXISTS exerciseinfo_entity;
---DROP TABLE IF EXISTS music_entity;
---DROP TABLE IF EXISTS user_entity;
+-- DROP TABLE IF EXISTS recommendation_entity;
+-- DROP TABLE IF EXISTS exerciseinfo_entity;
+-- DROP TABLE IF EXISTS music_entity;
+-- DROP TABLE IF EXISTS user_entity;
 
 -- 마지막으로 최상위 부모
---DROP TABLE IF EXISTS social_type;
---DROP TABLE IF EXISTS musictag_entity;
---DROP TABLE IF EXISTS place;
+-- DROP TABLE IF EXISTS social_type;
+-- DROP TABLE IF EXISTS musictag_entity;
+-- DROP TABLE IF EXISTS place;
 
 -- 1. 기본 테이블 (가장 독립적)
 CREATE TABLE IF NOT EXISTS `place` (
