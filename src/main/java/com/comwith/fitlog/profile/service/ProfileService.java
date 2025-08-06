@@ -200,10 +200,12 @@ public class ProfileService {
     }
 
     // goalType만 추출해서 String 리스트로
-    private List<String> getGoals(User user) {
+    private String getGoals(User user) {
         return goalRepository.findByUser(user).stream()
                 .map(UserGoal::getGoalType)  // Entity 필드명: goalType
-                .collect(Collectors.toList());
+                .findFirst()
+                // .collect(Collectors.toList());
+                .orElse(null);
     }
 
     // Entity → 기존 Request DTO 변환
