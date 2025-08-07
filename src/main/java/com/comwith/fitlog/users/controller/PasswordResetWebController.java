@@ -10,17 +10,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class PasswordResetWebController {
 
-    @Autowired
-    private PasswordResetService passwordResetService;
+    @GetMapping("/reset-password")
+    public String resetPasswordPage() {
+        // 토큰 검증은 React에서 API로 처리하므로 단순히 React 앱만 반환
+        return "forward:/index.html";
+    }
 
-    @GetMapping("/reset-password") // 404 오류 해결 위해 추가
-    public String handleResetLink(@RequestParam("token") String token) {
-
-        if (passwordResetService.isValidToken(token)) {
-            // 프론트엔드 페이지 리다이렉트 (경로 확인 필요합니다)
-            return "redirect:/resetPw?token=" + token;
-        } else {
-            return "redirect:/login?error=invalidToken";
-        }
+    // 혹시 다른 경로도 사용한다면
+    @GetMapping("/resetPw")
+    public String resetPwPage() {
+        return "forward:/index.html";
     }
 }

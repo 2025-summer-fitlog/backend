@@ -45,7 +45,7 @@ public class WebSecurityConfig {
                                 "/api/users/request-reset-password",
                                 "/api/users/check-reset-token",
                                 "/api/users/reset-password",
-                                "/resetPw/**",
+
                                 "/reset-password","/reset-password/**",
                                 "/password-reset", "/password-reset/**",
                                 "/api/users/register", "/api/users/login", "/api/users/logout",
