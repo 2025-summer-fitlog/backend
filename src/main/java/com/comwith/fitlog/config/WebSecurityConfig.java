@@ -62,6 +62,7 @@ public class WebSecurityConfig {
                                 "/**.css",
                                 "/**.js",
                                 "/**.png", "/**.jpg", "/**.gif", "/**.ico",
+                                "/music/**",
                                 "/favicon.ico"
                         ).permitAll()
                         .requestMatchers("/api/init/**", "/api/log/**", "/api/profile/**").authenticated()
