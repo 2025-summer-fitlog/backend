@@ -87,6 +87,10 @@ public class WebSecurityConfig {
                                 .userService(customOAuth2UserService)
                         )
                         .failureUrl("/login_test?error=oauth_failed")
+                        // 프론트 리다이렉트 주소 오류 수정 위한 부분
+                        .redirectionEndpoint(redirectionEndpointConfig -> redirectionEndpointConfig
+                                .baseUri("/login/oauth2/code/*")
+                        )
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
