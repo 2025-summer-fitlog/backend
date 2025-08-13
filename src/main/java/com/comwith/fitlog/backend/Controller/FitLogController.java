@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/fitlog")
+@RequestMapping("/api/fitlog")
 @RequiredArgsConstructor
 
 public class FitLogController {

@@ -145,6 +145,8 @@ public class ProfileService {
 
 
         User savedUser = userRepository.save(user);
+        userRepository.flush();
+
         log.info("개인정보 수정 완료!");
 
         // 응답 생성

@@ -81,12 +81,12 @@ public class UserController {
 
     // 로그인 (Spring Security와 연동)
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody UserLoginRequest request, BindingResult bindingResult, HttpServletRequest httpRequest) {
+    public ResponseEntity<UserLoginResponse> login(@Valid @RequestBody UserLoginRequest request, BindingResult bindingResult, HttpServletRequest httpRequest) {
         if (bindingResult.hasErrors()) {
-            Map<String, String> errors = new HashMap<>();
+            Map<String, Object> errors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error ->
                     errors.put(error.getField(), error.getDefaultMessage()));
-            return ResponseEntity.badRequest().body(errors);
+            return ResponseEntity.badRequest().build();
         }
 
         try {
@@ -110,15 +110,17 @@ public class UserController {
             UserLoginResponse response = new UserLoginResponse(
                     loginUser.getId(),
                     loginUser.getUsername(),
-                    loginUser.getName()
+                    loginUser.getName(),
+                    loginUser.getEmail()
             );
 
             return ResponseEntity.ok(response);
 
         } catch (AuthenticationException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "아이디 또는 비밀번호가 올바르지 않습니다.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            // Map<String, String> error = new HashMap<>();
+            // error.put("error", "아이디 또는 비밀번호가 올바르지 않습니다.");
+            // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
