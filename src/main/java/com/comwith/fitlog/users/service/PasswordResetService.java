@@ -49,7 +49,8 @@ public class PasswordResetService {
     }
 
     private void sendResetEmail(String toEmail, String token) {
-        String link = "https://fitlog-2025.duckdns.org/reset-password?token=" + token;
+        // String link = "https://fitlog-2025.duckdns.org/reset-password?token=" + token;
+        String link = "https://frontend-liard-nine-85.vercel.app/resetPw?token=" + token;
         String html = "<p>비밀번호 재설정은 아래 링크에서 30분 이내 완료하세요.</p>"
                 + "<a href='" + link + "'>비밀번호 재설정하기</a>";
         try {
