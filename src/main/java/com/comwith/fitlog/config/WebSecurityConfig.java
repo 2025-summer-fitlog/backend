@@ -80,11 +80,11 @@ public class WebSecurityConfig {
                                 "/",
                                 "/login_test",
                                 "/fitlog-onboarding",
+                                "/api/music/**",
                                 "/api/users/send-verification", "/api/users/verify-email",
                                 "/api/users/request-reset-password",
                                 "/api/users/check-reset-token",
                                 "/api/users/reset-password",
-
                                 "/reset-password","/reset-password/**",
                                 "/password-reset", "/password-reset/**",
                                 "/api/users/register", "/auth/login", "/api/users/login", "/api/users/logout",
