@@ -132,7 +132,7 @@ public class InitController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             Long userId = getUserIdFromAuthentication(authentication); // ✨ 헬퍼 메서드 사용
 
-            List<UserGoal> savedGoals = initService.saveGoals(userId, request);
+            UserGoal savedGoals = initService.saveGoals(userId, request);
             return ResponseEntity.ok(savedGoals);
         } catch (IllegalStateException | IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());

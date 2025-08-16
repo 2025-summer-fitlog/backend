@@ -1,0 +1,53 @@
+package com.comwith.fitlog.backend.Entity;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.*;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+
+@Entity
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Table(name = "recommendation_entity")
+
+
+public class RecommendationEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private  String title;
+    private String url;
+    private String description; // new - sql dump 파일에 있던 내용 추가
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "recommendation_keywords",
+            joinColumns = @JoinColumn(name = "recommendation_id"))
+    @Column(name = "keyword")
+    private List<String> keywords = new ArrayList<>(); // null 방지
+
+
+    @Lob
+    private String preparation; //준비 운동
+
+    @Lob //주의사항
+    private String precautions;
+
+    @Lob //보조기구 추천
+    private String equipment;
+
+    @Lob //운동 효과
+    private String effect;
+
+    //ex.하체,상체
+    private String type;
+
+}

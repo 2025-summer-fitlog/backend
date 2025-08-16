@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class WorkoutInfoResponseDto {
     private PhysicalInfoRequest physicalInfo;
-    private List<String> goals;
+    private String goals;
     private PreferredTimeRequest preferredTime;
     private WorkoutFrequencyRequest frequency;
     private List<String> mainParts;

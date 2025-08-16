@@ -65,7 +65,7 @@ public class InitService {
 
     // 운동 목적
     @Transactional
-    public List<UserGoal> saveGoals(Long userId, GoalRequest dto) {
+    public UserGoal saveGoals(Long userId, GoalRequest dto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
 
@@ -73,10 +73,8 @@ public class InitService {
         userGoalRepository.deleteByUser(user);
         userGoalRepository.flush(); // 즉시 변경사항을 DB에 반영
 
-        List<UserGoal> savedGoals = dto.getGoals().stream()
-                .map(goalType -> new UserGoal(user, goalType))
-                .collect(Collectors.toList());
-        return userGoalRepository.saveAll(savedGoals);
+        UserGoal userGoal = new UserGoal(user, dto.getGoals()); // getGoals() → getGoal()
+        return userGoalRepository.save(userGoal); // saveAll() → save()
     }
 
     // 희망 운동 시간

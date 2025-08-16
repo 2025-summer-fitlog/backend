@@ -4,7 +4,9 @@ import com.comwith.fitlog.users.dto.*;
 import com.comwith.fitlog.users.entity.User;
 import com.comwith.fitlog.users.service.EmailService;
 import com.comwith.fitlog.users.service.UserService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -77,12 +81,12 @@ public class UserController {
 
     // 로그인 (Spring Security와 연동)
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody UserLoginRequest request, BindingResult bindingResult, HttpServletRequest httpRequest) {
+    public ResponseEntity<UserLoginResponse> login(@Valid @RequestBody UserLoginRequest request, BindingResult bindingResult, HttpServletRequest httpRequest) {
         if (bindingResult.hasErrors()) {
-            Map<String, String> errors = new HashMap<>();
+            Map<String, Object> errors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error ->
                     errors.put(error.getField(), error.getDefaultMessage()));
-            return ResponseEntity.badRequest().body(errors);
+            return ResponseEntity.badRequest().build();
         }
 
         try {
@@ -106,23 +110,26 @@ public class UserController {
             UserLoginResponse response = new UserLoginResponse(
                     loginUser.getId(),
                     loginUser.getUsername(),
-                    loginUser.getName()
+                    loginUser.getName(),
+                    loginUser.getEmail()
             );
 
             return ResponseEntity.ok(response);
 
         } catch (AuthenticationException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "아이디 또는 비밀번호가 올바르지 않습니다.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            // Map<String, String> error = new HashMap<>();
+            // error.put("error", "아이디 또는 비밀번호가 올바르지 않습니다.");
+            // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
-    // 로그아웃
+
+    // 로그아웃 - new 테스트
     @PostMapping("/logout")
-    public ResponseEntity<Map<String, Object>> logout(HttpServletRequest request) {
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         try {
-            // 현재 세션 무효화
+            // 현재 세션 무효화 (OAuth2든 일반 로그인이든 동일하게 처리)
             HttpSession session = request.getSession(false);
             if (session != null) {
                 session.invalidate();
@@ -131,49 +138,107 @@ public class UserController {
             // SecurityContext 초기화
             SecurityContextHolder.clearContext();
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "로그아웃이 완료되었습니다.");
+            // 쿠키 삭제 (JSESSIONID)
+            Cookie cookie = new Cookie("JSESSIONID", null);
+            cookie.setPath("/");
+            cookie.setHttpOnly(true);
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
 
-            return ResponseEntity.ok(response);
+            Map<String, String> responseBody = new HashMap<>();
+            responseBody.put("message", "로그아웃이 완료되었습니다.");
+            return ResponseEntity.ok(responseBody);
 
         } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
+            Map<String, String> error = new HashMap<>();
             error.put("error", "로그아웃 처리 중 오류가 발생했습니다.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
 
-    // 현재 로그인된 사용자 정보 조회
+
+    // 현재 로그인된 사용자 정보 조회 (일반 로그인 + OAuth2 지원)
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(Authentication authentication, HttpServletRequest request) {
         System.out.println("=== /me 엔드포인트 디버깅 ===");
         System.out.println("Authentication: " + authentication);
-        System.out.println("Authentication name: " + (authentication != null ? authentication.getName() : "null"));
-        System.out.println("Is authenticated: " + (authentication != null ? authentication.isAuthenticated() : "false"));
-        System.out.println("Session ID: " + request.getSession().getId());
+        System.out.println("Authentication type: " + (authentication != null ? authentication.getClass().getSimpleName() : "null"));
 
-        if (authentication == null || !authentication.isAuthenticated() || authentication.getName().equals("anonymousUser")) {
-            Map<String, String> errors = new HashMap<>();
-            errors.put("error", "로그인이 필요합니다!");
-
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getName())) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("authenticated", false);
+            return ResponseEntity.ok(response);
         }
 
         try {
-            String username = authentication.getName();
-            User user = userService.findByUsername(username);
-            UserResponse response = new UserResponse(
-                    user.getId(),
-                    user.getUsername(),
-                    user.getName(),
-                    user.getEmail()
-            );
+            Map<String, Object> response = new HashMap<>();
+            response.put("authenticated", true);
+            Map<String, Object> user = new HashMap<>();
+
+            // OAuth2 로그인인지 확인
+            if (authentication instanceof OAuth2AuthenticationToken) {
+                OAuth2AuthenticationToken oauth2Token = (OAuth2AuthenticationToken) authentication;
+                OAuth2User oauth2User = oauth2Token.getPrincipal();
+                String provider = oauth2Token.getAuthorizedClientRegistrationId();
+
+                user.put("provider", provider);
+
+                if ("kakao".equals(provider)) {
+                    // 카카오 사용자 정보 처리
+                    Map<String, Object> properties = oauth2User.getAttribute("properties");
+                    Map<String, Object> kakaoAccount = oauth2User.getAttribute("kakao_account");
+
+                    if (properties != null) {
+                        user.put("name", properties.get("nickname"));
+                        user.put("profileImage", properties.get("profile_image"));
+                    }
+
+                    if (kakaoAccount != null) {
+                        user.put("email", kakaoAccount.get("email"));
+                    }
+
+                } else if ("google".equals(provider)) {
+                    // 구글 사용자 정보 처리
+                    user.put("name", oauth2User.getAttribute("name"));
+                    user.put("email", oauth2User.getAttribute("email"));
+                    user.put("profileImage", oauth2User.getAttribute("picture"));
+                }
+
+            } else {
+                // 일반 로그인 사용자 정보 처리
+                String username = authentication.getName();
+
+                try {
+                    User dbUser = userService.findByUsername(username);
+
+                    user.put("name", dbUser.getName());
+                    user.put("email", dbUser.getEmail());
+                    user.put("username", dbUser.getUsername());
+                    user.put("provider", null);
+
+                } catch (Exception e) {
+                    // 로컬 사용자를 못 찾은 경우 (예외 상황)
+                    System.err.println("사용자를 찾을 수 없음: " + username);
+                    user.put("name", username);
+                    user.put("email", null);
+                    user.put("provider", "unknown");
+                }
+            }
+
+            response.put("user", user);
             return ResponseEntity.ok(response);
+
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다.");
+            System.err.println("사용자 정보 조회 오류: " + e.getMessage());
+            Map<String, Object> response = new HashMap<>();
+            response.put("authenticated", false);
+            response.put("error", "사용자 정보를 가져올 수 없습니다.");
+            return ResponseEntity.ok(response);
         }
     }
+
+
 
     // 이메일 검증 코드 발송
     @PostMapping("/send-verification")
