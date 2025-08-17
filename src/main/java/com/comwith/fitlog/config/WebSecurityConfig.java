@@ -147,7 +147,8 @@ public class WebSecurityConfig {
     public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
         return (request, response, authentication) -> {
             // response.sendRedirect("/fitlog-onboarding");
-            response.sendRedirect("https://frontend-liard-nine-85.vercel.app/main");
+            // response.sendRedirect("https://frontend-liard-nine-85.vercel.app/main");
+            response.sendRedirect("https://fitlog-site.vercel.app/main");
         };
     }
 
@@ -163,7 +164,8 @@ public class WebSecurityConfig {
         configuration.setAllowedOriginPatterns(Arrays.asList(
                 "http://localhost:3000",  // 로컬 개발환경
                 "https://fitlog-2025.duckdns.org",  // 백엔드 서버 도메인 (필요시)
-                "https://frontend-liard-nine-85.vercel.app"  // 실제 프론트 배포 주소
+                "https://frontend-liard-nine-85.vercel.app",  // 실제 프론트 배포 주소 (이전)
+                "https://fitlog-site.vercel.app/" // 프론트 배포 주소
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
